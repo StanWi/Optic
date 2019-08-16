@@ -24,12 +24,22 @@ Dim $work_files[1]
 Global $aValue
 ; ===== Запись параметров в лог файл =====
 Global $enableLogFile = False
-$company = IniRead("optic.ini", "Main", "Company", "Company")
 Global $db_file = IniRead("optic.ini", "Main", "Database", @ScriptDir & "\optic.db")
 Global $GMT = 8
 
+_SQLite_Startup('sqlite3.dll', False, 1)
+If @error Then
+	MsgBox($MB_SYSTEMMODAL, "SQLite Error", "SQLite3.dll Can't be Loaded!")
+	Exit -1
+EndIf
+Local $aRow
+_SQLite_Open($db_file)
+_SQLite_QuerySingleRow(-1, "SELECT * FROM main WHERE id = 1;", $aRow)
+_SQLite_Close()
+_SQLite_Shutdown()
+
 ; Главное окно
-Global $GUI = GUICreate(StringFormat('Система мониторинга затухания в оптических волокнах - %s', $company), 1000, 650)
+Global $GUI = GUICreate(StringFormat('%s - %s', $aRow[2], $aRow[1]), 1000, 650)
 GUISetOnEvent($GUI_EVENT_CLOSE, "_Exit")
 ; Календарь
 GUICtrlCreateLabel('Период с:', 10, 10, 100)
