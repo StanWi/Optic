@@ -28,9 +28,9 @@ For $i = 1 To $aNEList[0]
 Next
 
 Func export_optic_pusk($file, $ip)
-	Local $result[1000][5]
 	Local $aRecords, $i, $j, $data, $time, $request
 	_FileReadToArray($file, $aRecords)
+	Local $result[UBound($aRecords)][5]
 	Local $k = 1
 	For $i = 1 To $aRecords[0]
 		If StringLeft($aRecords[$i], 1) = '*' Then
