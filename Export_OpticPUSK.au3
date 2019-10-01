@@ -5,7 +5,7 @@
 
 Opt("MustDeclareVars", 1)
 
-Local $readonly = True
+Local $readonly = False
 Local $GMT = 8
 Local $sDbFile = IniRead("optic.ini", "Main", "Database", @ScriptDir & "\optic.db")
 Local $path = @ScriptDir & '\Export\PUSK\'
