@@ -2,8 +2,8 @@
 #AutoIt3Wrapper_Compression=0
 #AutoIt3Wrapper_UseX64=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-;15.12.2017 В топологию добавлено затухание вносимое аттенюаторами в линию.
-;21.12.2017 Опция сортировки списка "по порядку" и "по алфавиту"
+;15.12.2017 Р’ С‚РѕРїРѕР»РѕРіРёСЋ РґРѕР±Р°РІР»РµРЅРѕ Р·Р°С‚СѓС…Р°РЅРёРµ РІРЅРѕСЃРёРјРѕРµ Р°С‚С‚РµРЅСЋР°С‚РѕСЂР°РјРё РІ Р»РёРЅРёСЋ.
+;21.12.2017 РћРїС†РёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё СЃРїРёСЃРєР° "РїРѕ РїРѕСЂСЏРґРєСѓ" Рё "РїРѕ Р°Р»С„Р°РІРёС‚Сѓ"
 #include <Array.au3>
 #include <Date.au3>
 #include <File.au3>
@@ -13,8 +13,8 @@
 #include <SQLite.au3>
 #include <ListViewConstants.au3>
 #include <GuiListView.au3>
-#include <GuiImageList.au3>;23.01.2017 для цветов в списке
-#include <FileConstants.au3>;23.01.2017 для записи лога
+#include <GuiImageList.au3>;23.01.2017 РґР»СЏ С†РІРµС‚РѕРІ РІ СЃРїРёСЃРєРµ
+#include <FileConstants.au3>;23.01.2017 РґР»СЏ Р·Р°РїРёСЃРё Р»РѕРіР°
 
 Opt('GUIOnEventMode', 1)
 
@@ -22,7 +22,7 @@ Global $Graph, $ini, $data_path, $journal, $ne_list, $card_list, $param_list, $c
 Global $aLinkName
 Dim $work_files[1]
 Global $aValue
-; ===== Запись параметров в лог файл =====
+; ===== Р—Р°РїРёСЃСЊ РїР°СЂР°РјРµС‚СЂРѕРІ РІ Р»РѕРі С„Р°Р№Р» =====
 Global $enableLogFile = False
 Global $db_file = IniRead("optic.ini", "Main", "Database", @ScriptDir & "\optic.db")
 Global $GMT = 8
@@ -38,40 +38,40 @@ _SQLite_QuerySingleRow(-1, "SELECT * FROM main WHERE id = 1;", $aRow)
 _SQLite_Close()
 _SQLite_Shutdown()
 
-; Главное окно
+; Р“Р»Р°РІРЅРѕРµ РѕРєРЅРѕ
 Global $GUI = GUICreate(StringFormat('%s - %s', $aRow[2], $aRow[1]), 1000, 650)
 GUISetOnEvent($GUI_EVENT_CLOSE, "_Exit")
-; Календарь
-GUICtrlCreateLabel('Период с:', 10, 10, 100)
+; РљР°Р»РµРЅРґР°СЂСЊ
+GUICtrlCreateLabel('РџРµСЂРёРѕРґ СЃ:', 10, 10, 100)
 $date_start = GUICtrlCreateDate(_DateAdd('M', -1, _NowCalcDate()), 10, 35, 100, -1, $DTS_SHORTDATEFORMAT)
 GUICtrlSetOnEvent($date_start, "_DateCheckStart")
-GUICtrlCreateLabel('по:', 120, 10, 100)
+GUICtrlCreateLabel('РїРѕ:', 120, 10, 100)
 $date_stop = GUICtrlCreateDate(_NowCalcDate(), 120, 35, 100, -1, $DTS_SHORTDATEFORMAT)
 GUICtrlSetOnEvent($date_stop, "_DateCheckStop")
-; Топология
-GUICtrlCreateLabel('Участок:', 10, 70, 100)
-Global $label_sort = GUICtrlCreateLabel("по алфавиту", 120, 70, 100, 21, 0x0002)
+; РўРѕРїРѕР»РѕРіРёСЏ
+GUICtrlCreateLabel('РЈС‡Р°СЃС‚РѕРє:', 10, 70, 100)
+Global $label_sort = GUICtrlCreateLabel("РїРѕ Р°Р»С„Р°РІРёС‚Сѓ", 120, 70, 100, 21, 0x0002)
 GUICtrlSetColor(-1, 0x0000ff)
 GUICtrlSetCursor(-1, 0)
 GUICtrlSetOnEvent($label_sort, "_ListSort")
 Global $topo_list = GUICtrlCreateCombo('', 10, 95, 210)
 GUICtrlSetData($topo_list, _DataLinkList())
 GUICtrlSetOnEvent($topo_list, "_DrawGraph")
-; Ждите
+; Р–РґРёС‚Рµ
 Global $waitLabel = GUICtrlCreateLabel('', 10, 150, 500, 25)
-; Блок информации
+; Р‘Р»РѕРє РёРЅС„РѕСЂРјР°С†РёРё
 Global $ListView = GUICtrlCreateListView('', 240, 10, 750, 105)
-;Направление                    |Амин, дБ|Амакс, дБ|dA, дБ|Аср, дБ|Комментарий
-_GUICtrlListView_InsertColumn($ListView, 0, "Направление", 230)
-_GUICtrlListView_InsertColumn($ListView, 1, "Амин, дБ", 70)
-_GUICtrlListView_InsertColumn($ListView, 2, "Амакс, дБ", 70)
-_GUICtrlListView_InsertColumn($ListView, 3, "dA, дБ", 70)
-_GUICtrlListView_InsertColumn($ListView, 4, "Аср, дБ", 70)
-_GUICtrlListView_InsertColumn($ListView, 5, "Комментарий", 180)
-; Показать окно
+;РќР°РїСЂР°РІР»РµРЅРёРµ                    |РђРјРёРЅ, РґР‘|РђРјР°РєСЃ, РґР‘|dA, РґР‘|РђСЃСЂ, РґР‘|РљРѕРјРјРµРЅС‚Р°СЂРёР№
+_GUICtrlListView_InsertColumn($ListView, 0, "РќР°РїСЂР°РІР»РµРЅРёРµ", 230)
+_GUICtrlListView_InsertColumn($ListView, 1, "РђРјРёРЅ, РґР‘", 70)
+_GUICtrlListView_InsertColumn($ListView, 2, "РђРјР°РєСЃ, РґР‘", 70)
+_GUICtrlListView_InsertColumn($ListView, 3, "dA, РґР‘", 70)
+_GUICtrlListView_InsertColumn($ListView, 4, "РђСЃСЂ, РґР‘", 70)
+_GUICtrlListView_InsertColumn($ListView, 5, "РљРѕРјРјРµРЅС‚Р°СЂРёР№", 180)
+; РџРѕРєР°Р·Р°С‚СЊ РѕРєРЅРѕ
 GUISetState()
 
-While 1 ;Основной цикл. Просто крутится. 100 мс.
+While 1 ;РћСЃРЅРѕРІРЅРѕР№ С†РёРєР». РџСЂРѕСЃС‚Рѕ РєСЂСѓС‚РёС‚СЃСЏ. 100 РјСЃ.
 	Sleep(100)
 WEnd
 
@@ -94,7 +94,7 @@ EndFunc   ;==>_DateCheckStop
 Func _DrawGraph()
 	_GraphGDIPlus_Delete($GUI, $Graph)
 	_GUICtrlListView_DeleteAllItems($ListView)
-	GUICtrlSetData($waitLabel, 'Пожалуйста, подождите...')
+	GUICtrlSetData($waitLabel, 'РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РїРѕРґРѕР¶РґРёС‚Рµ...')
 	Local $link = GUICtrlRead($topo_list)
 	Local $ne_list = StringSplit($link, '. ', 1)
 	If $ne_list[0] = 1 Then
@@ -102,13 +102,13 @@ Func _DrawGraph()
 	ElseIf $ne_list[0] = 2 Then
 		$link = $ne_list[2]
 	Else
-		MsgBox(0, 'Сообщение - Оптика', 'Ошибка в названии линка.')
+		MsgBox(0, 'РЎРѕРѕР±С‰РµРЅРёРµ - РћРїС‚РёРєР°', 'РћС€РёР±РєР° РІ РЅР°Р·РІР°РЅРёРё Р»РёРЅРєР°.')
 		Return
 	EndIf
 	Local $ne_list = StringSplit($link, ' - ', 1)
 	;_ArrayDisplay($ne_list)
-	If $ne_list[0] <> 2 Then ;проверка правильности определения линка
-		MsgBox(0, 'Сообщение - Оптика', 'Ошибка в названии линка.')
+	If $ne_list[0] <> 2 Then ;РїСЂРѕРІРµСЂРєР° РїСЂР°РІРёР»СЊРЅРѕСЃС‚Рё РѕРїСЂРµРґРµР»РµРЅРёСЏ Р»РёРЅРєР°
+		MsgBox(0, 'РЎРѕРѕР±С‰РµРЅРёРµ - РћРїС‚РёРєР°', 'РћС€РёР±РєР° РІ РЅР°Р·РІР°РЅРёРё Р»РёРЅРєР°.')
 		Return
 	EndIf
 	Local $start = _EPOCH(StringRegExpReplace(GUICtrlRead($date_start), '(\d+)\.(\d+)\.(\d+)', '$1/$2/$3') & ' 00:00:00')
@@ -134,9 +134,9 @@ Func _DrawGraph()
 			Dim $aLinkName[1][2]
 			For $i = 1 To $iRows
 				Local $timer = TimerInit()
-				$attenuation = $aResult[$i][10] ;Значение затухания на аттенюаторе. Отрицательное число - вносимое затухание. Положительное - усиление.
-				GUICtrlSetData($waitLabel, 'Пожалуйста, подождите... Запрос ' & $i & ' из ' & $iRows)
-				Switch $aResult[$i][1] ;Выбираем тип оборудования
+				$attenuation = $aResult[$i][10] ;Р—РЅР°С‡РµРЅРёРµ Р·Р°С‚СѓС…Р°РЅРёСЏ РЅР° Р°С‚С‚РµРЅСЋР°С‚РѕСЂРµ. РћС‚СЂРёС†Р°С‚РµР»СЊРЅРѕРµ С‡РёСЃР»Рѕ - РІРЅРѕСЃРёРјРѕРµ Р·Р°С‚СѓС…Р°РЅРёРµ. РџРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРµ - СѓСЃРёР»РµРЅРёРµ.
+				GUICtrlSetData($waitLabel, 'РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РїРѕРґРѕР¶РґРёС‚Рµ... Р—Р°РїСЂРѕСЃ ' & $i & ' РёР· ' & $iRows)
+				Switch $aResult[$i][1] ;Р’С‹Р±РёСЂР°РµРј С‚РёРї РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ
 					Case 'eciXdm'
 						$request = "SELECT time, neId, last FROM optic_xdm WHERE time BETWEEN " & $start & " AND " & $stop & " " & _
 								"AND ((neId = (SELECT Id FROM ECI_NE WHERE Name = '" & $aResult[$i][2] & "') " & _
@@ -156,7 +156,7 @@ Func _DrawGraph()
 						$card1 = $tmp[1]
 						$tmp = StringSplit($aResult[$i][6], ' GE-ETY port ', 1)
 						If @error = 1 Then
-							; исправлен баг 18.10.2016, вместо $aResult[$i][6] было $aResult[$i][3]
+							; РёСЃРїСЂР°РІР»РµРЅ Р±Р°Рі 18.10.2016, РІРјРµСЃС‚Рѕ $aResult[$i][6] Р±С‹Р»Рѕ $aResult[$i][3]
 							$tmp = StringSplit($aResult[$i][6], ' oPort ', 1)
 							$object2 = 'oPort ' & $tmp[2]
 						Else
@@ -194,11 +194,11 @@ Func _DrawGraph()
 				$timer_request_time = TimerDiff($timer_request)
 				$timer_request_time_per_item = Round($timer_request_time / $iOpticRows * 1000)
 				$timer_calc = TimerInit()
-				ConsoleWrite('Получен ответ на запрос спустя ' & Round(TimerDiff($timer)) & ' милисекунд.' & @CRLF)
+				ConsoleWrite('РџРѕР»СѓС‡РµРЅ РѕС‚РІРµС‚ РЅР° Р·Р°РїСЂРѕСЃ СЃРїСѓСЃС‚СЏ ' & Round(TimerDiff($timer)) & ' РјРёР»РёСЃРµРєСѓРЅРґ.' & @CRLF)
 				;_ArrayDisplay($aDataRaw)
 				_ArraySort($aDataRaw, 0, 1)
 				;_ArrayDisplay($aDataRaw)
-				ConsoleWrite('Кол-во строк ' & $iOpticRows & @CRLF)
+				ConsoleWrite('РљРѕР»-РІРѕ СЃС‚СЂРѕРє ' & $iOpticRows & @CRLF)
 				$line = 0
 				Dim $aData[$iOpticRows][2]
 				$timer = TimerInit()
@@ -211,11 +211,11 @@ Func _DrawGraph()
 						#ce ;Stop debug
 						$line += 1
 						$aData[$line][0] = ($aDataRaw[$j + 1][0] + $aDataRaw[$j][0]) / 2
-						$aData[$line][1] = Abs($aDataRaw[$j + 1][2] - $aDataRaw[$j][2]) + $attenuation ;Вычисляем значение затухания
+						$aData[$line][1] = Abs($aDataRaw[$j + 1][2] - $aDataRaw[$j][2]) + $attenuation ;Р’С‹С‡РёСЃР»СЏРµРј Р·РЅР°С‡РµРЅРёРµ Р·Р°С‚СѓС…Р°РЅРёСЏ
 					EndIf
 				Next
-				ConsoleWrite('Список запроса получен спустя ' & Round(TimerDiff($timer)) & ' милисекунд.' & @CRLF)
-				ConsoleWrite('Обработка одного запроса ' & Round(TimerDiff($timer) / $iOpticRows * 1000) & ' микросекунд.' & @CRLF)
+				ConsoleWrite('РЎРїРёСЃРѕРє Р·Р°РїСЂРѕСЃР° РїРѕР»СѓС‡РµРЅ СЃРїСѓСЃС‚СЏ ' & Round(TimerDiff($timer)) & ' РјРёР»РёСЃРµРєСѓРЅРґ.' & @CRLF)
+				ConsoleWrite('РћР±СЂР°Р±РѕС‚РєР° РѕРґРЅРѕРіРѕ Р·Р°РїСЂРѕСЃР° ' & Round(TimerDiff($timer) / $iOpticRows * 1000) & ' РјРёРєСЂРѕСЃРµРєСѓРЅРґ.' & @CRLF)
 				$iOpticRows = $line
 				;_ArrayDisplay($aData)
 				If $iRval = $SQLITE_OK Then
@@ -238,8 +238,8 @@ Func _DrawGraph()
 				$timer_calc_time_per_item = Round($timer_calc_time / $iOpticRows * 1000)
 				ConsoleWrite('' & @CRLF)
 				ConsoleWrite('==============================' & @CRLF)
-				ConsoleWrite('Время запроса ' & Round($timer_request_time / 1000) & ' c, одна запись за ' & $timer_request_time_per_item & ' мкс' & @CRLF)
-				ConsoleWrite('Время вычислений ' & Round($timer_calc_time) & ' мс, одна запись за ' & $timer_calc_time_per_item & ' мкс' & @CRLF)
+				ConsoleWrite('Р’СЂРµРјСЏ Р·Р°РїСЂРѕСЃР° ' & Round($timer_request_time / 1000) & ' c, РѕРґРЅР° Р·Р°РїРёСЃСЊ Р·Р° ' & $timer_request_time_per_item & ' РјРєСЃ' & @CRLF)
+				ConsoleWrite('Р’СЂРµРјСЏ РІС‹С‡РёСЃР»РµРЅРёР№ ' & Round($timer_calc_time) & ' РјСЃ, РѕРґРЅР° Р·Р°РїРёСЃСЊ Р·Р° ' & $timer_calc_time_per_item & ' РјРєСЃ' & @CRLF)
 				ConsoleWrite('==============================' & @CRLF)
 				ConsoleWrite('' & @CRLF)
 			Next
@@ -254,11 +254,11 @@ Func _DrawGraph()
 ;~ 	"AND paramId = 280;", $aData, $iRows, $iColumns)
 	_SQLite_Close()
 	_SQLite_Shutdown()
-	If $aValue[0][0] > 0 Then ;Обработка с применением правила трёх s
-		ConsoleWrite('Работа с базой закончена. Обработка результатов.' & @CRLF)
+	If $aValue[0][0] > 0 Then ;РћР±СЂР°Р±РѕС‚РєР° СЃ РїСЂРёРјРµРЅРµРЅРёРµРј РїСЂР°РІРёР»Р° С‚СЂС‘С… s
+		ConsoleWrite('Р Р°Р±РѕС‚Р° СЃ Р±Р°Р·РѕР№ Р·Р°РєРѕРЅС‡РµРЅР°. РћР±СЂР°Р±РѕС‚РєР° СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ.' & @CRLF)
 		Local $timer = TimerInit()
 		;_ArrayDisplay($aValue)
-		;Убираем значения меньше 0 и больше 50 дБ
+		;РЈР±РёСЂР°РµРј Р·РЅР°С‡РµРЅРёСЏ РјРµРЅСЊС€Рµ 0 Рё Р±РѕР»СЊС€Рµ 50 РґР‘
 		For $j = 1 To $aValue[0][1] * 2 - 1 Step 2
 			$sum = 0
 			$n = 0
@@ -273,38 +273,38 @@ Func _DrawGraph()
 			Next
 			$average = $sum / $n
 			$sumsquares = 0
-			ConsoleWrite('сумма ' & $sum & ' кол-во элементов ' & $n & ' среднее ' & $average & @CRLF)
+			ConsoleWrite('СЃСѓРјРјР° ' & $sum & ' РєРѕР»-РІРѕ СЌР»РµРјРµРЅС‚РѕРІ ' & $n & ' СЃСЂРµРґРЅРµРµ ' & $average & @CRLF)
 			For $i = 1 To $aValue[0][$j - 1]
 				If $aValue[$i][$j] <> '' Then
 					$sumsquares += ($aValue[$i][$j] - $average) ^ 2
 				EndIf
 			Next
 			$s = Sqrt(1 / ($n + 1) * $sumsquares)
-			ConsoleWrite('сумма квадратов ' & $sumsquares & ' стандартное отклонение ' & $s & @CRLF)
-			; Правило трёх сигм. Стандартно $sigma = 3. Для больших изменений затухания значение может быть увеличено.
-			$sigma = 4 ; По умолчанию 3
+			ConsoleWrite('СЃСѓРјРјР° РєРІР°РґСЂР°С‚РѕРІ ' & $sumsquares & ' СЃС‚Р°РЅРґР°СЂС‚РЅРѕРµ РѕС‚РєР»РѕРЅРµРЅРёРµ ' & $s & @CRLF)
+			; РџСЂР°РІРёР»Рѕ С‚СЂС‘С… СЃРёРіРј. РЎС‚Р°РЅРґР°СЂС‚РЅРѕ $sigma = 3. Р”Р»СЏ Р±РѕР»СЊС€РёС… РёР·РјРµРЅРµРЅРёР№ Р·Р°С‚СѓС…Р°РЅРёСЏ Р·РЅР°С‡РµРЅРёРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ СѓРІРµР»РёС‡РµРЅРѕ.
+			$sigma = 4 ; РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 3
 			For $i = 1 To $aValue[0][$j - 1]
 				If $aValue[$i][$j] < ($average - $sigma * $s) Or $aValue[$i][$j] > ($average + $sigma * $s) Then
 					$aValue[$i][$j] = ''
 				EndIf
 			Next
 		Next
-		ConsoleWrite('Результаты обработаны спустя ' & Round(TimerDiff($timer)) & ' милисекунд.' & @CRLF)
+		ConsoleWrite('Р РµР·СѓР»СЊС‚Р°С‚С‹ РѕР±СЂР°Р±РѕС‚Р°РЅС‹ СЃРїСѓСЃС‚СЏ ' & Round(TimerDiff($timer)) & ' РјРёР»РёСЃРµРєСѓРЅРґ.' & @CRLF)
 		;_ArrayDisplay($aValue)
 		;_ArrayDisplay($aLinkName)
-		ConsoleWrite('Начало построения графиков.' & @CRLF)
-		GUICtrlSetData($waitLabel, 'Пожалуйста, подождите... Построение графиков')
+		ConsoleWrite('РќР°С‡Р°Р»Рѕ РїРѕСЃС‚СЂРѕРµРЅРёСЏ РіСЂР°С„РёРєРѕРІ.' & @CRLF)
+		GUICtrlSetData($waitLabel, 'РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РїРѕРґРѕР¶РґРёС‚Рµ... РџРѕСЃС‚СЂРѕРµРЅРёРµ РіСЂР°С„РёРєРѕРІ')
 		Local $timer = TimerInit()
 		_DrawLine($aValue)
-		ConsoleWrite('Графики построены спустя ' & Round(TimerDiff($timer)) & ' милисекунд.' & @CRLF) ; Round(TimerDiff($timer)/1000/60,2)
+		ConsoleWrite('Р“СЂР°С„РёРєРё РїРѕСЃС‚СЂРѕРµРЅС‹ СЃРїСѓСЃС‚СЏ ' & Round(TimerDiff($timer)) & ' РјРёР»РёСЃРµРєСѓРЅРґ.' & @CRLF) ; Round(TimerDiff($timer)/1000/60,2)
 		GUICtrlSetData($waitLabel, ' ')
 	Else
-		GUICtrlSetData($waitLabel, 'Данные за указанный промежуток времени не найдены.')
+		GUICtrlSetData($waitLabel, 'Р”Р°РЅРЅС‹Рµ Р·Р° СѓРєР°Р·Р°РЅРЅС‹Р№ РїСЂРѕРјРµР¶СѓС‚РѕРє РІСЂРµРјРµРЅРё РЅРµ РЅР°Р№РґРµРЅС‹.')
 	EndIf
 EndFunc   ;==>_DrawGraph
 
 Func _DrawLine($aData)
-	ConsoleWrite(_Now() & ': Активирована функция построения графиков.' & @CRLF)
+	ConsoleWrite(_Now() & ': РђРєС‚РёРІРёСЂРѕРІР°РЅР° С„СѓРЅРєС†РёСЏ РїРѕСЃС‚СЂРѕРµРЅРёСЏ РіСЂР°С„РёРєРѕРІ.' & @CRLF)
 	Local $i, $j
 	Dim $x[1]
 	Dim $y[1]
@@ -316,11 +316,11 @@ Func _DrawLine($aData)
 	Local $xmax = 0
 	Local $ymin = 1000
 	Local $ymax = 0
-	ConsoleWrite(_Now() & ': Определяем минимумы и максимумы.' & @CRLF)
+	ConsoleWrite(_Now() & ': РћРїСЂРµРґРµР»СЏРµРј РјРёРЅРёРјСѓРјС‹ Рё РјР°РєСЃРёРјСѓРјС‹.' & @CRLF)
 	For $j = 0 To $aData[0][1] - 1
-		ConsoleWrite(_Now() & ': Проход ' & $j + 1 & ' из ' & $aData[0][1] & '.' & @CRLF)
+		ConsoleWrite(_Now() & ': РџСЂРѕС…РѕРґ ' & $j + 1 & ' РёР· ' & $aData[0][1] & '.' & @CRLF)
 		For $i = 1 To $aData[0][$j * 2]
-			;Условие удаления пустых значений
+			;РЈСЃР»РѕРІРёРµ СѓРґР°Р»РµРЅРёСЏ РїСѓСЃС‚С‹С… Р·РЅР°С‡РµРЅРёР№
 			If $aData[$i][$j * 2 + 1] <> '' Then
 				;_ArrayAdd($x,$aData[$i][$j * 2])
 				;_ArrayAdd($y,$aData[$i][$j * 2 + 1])
@@ -331,45 +331,45 @@ Func _DrawLine($aData)
 					$xmax = $aData[$i][$j * 2]
 				EndIf
 				If $aData[$i][$j * 2 + 1] < $ymin Then
-					ConsoleWrite('Сравниваем ' & $aData[$i][$j * 2 + 1] & ' меньше, чем ' & $ymin & '. Минимальное ' & $aData[$i][$j * 2 + 1] & @CRLF)
+					ConsoleWrite('РЎСЂР°РІРЅРёРІР°РµРј ' & $aData[$i][$j * 2 + 1] & ' РјРµРЅСЊС€Рµ, С‡РµРј ' & $ymin & '. РњРёРЅРёРјР°Р»СЊРЅРѕРµ ' & $aData[$i][$j * 2 + 1] & @CRLF)
 					$ymin = $aData[$i][$j * 2 + 1]
 				EndIf
 				If $aData[$i][$j * 2 + 1] > $ymax Then
-					ConsoleWrite('Сравниваем ' & $aData[$i][$j * 2 + 1] & ' больше, чем ' & $ymax & '. Максимальное ' & $aData[$i][$j * 2 + 1] & @CRLF)
+					ConsoleWrite('РЎСЂР°РІРЅРёРІР°РµРј ' & $aData[$i][$j * 2 + 1] & ' Р±РѕР»СЊС€Рµ, С‡РµРј ' & $ymax & '. РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ ' & $aData[$i][$j * 2 + 1] & @CRLF)
 					$ymax = $aData[$i][$j * 2 + 1]
 				EndIf
 			EndIf
 		Next
 	Next
-	ConsoleWrite(_Now() & ': Определение пределов закончено.' & @CRLF)
+	ConsoleWrite(_Now() & ': РћРїСЂРµРґРµР»РµРЅРёРµ РїСЂРµРґРµР»РѕРІ Р·Р°РєРѕРЅС‡РµРЅРѕ.' & @CRLF)
 	$x[0] = UBound($x) - 1
 	;_ArrayDisplay($aData)
 	$limits[0][0] = $k_limit
-	ConsoleWrite(_Now() & ': Минимальное время ' & $xmin & @CRLF)
+	ConsoleWrite(_Now() & ': РњРёРЅРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ ' & $xmin & @CRLF)
 	;Local $xmin = _ArrayMin($x,1,1)
-	ConsoleWrite(_Now() & ': Максимальное время ' & $xmax & @CRLF)
+	ConsoleWrite(_Now() & ': РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ ' & $xmax & @CRLF)
 	;Local $xmax = _ArrayMax($x,1,1)
-	ConsoleWrite(_Now() & ': Минимальное затухание ' & $ymin & @CRLF)
+	ConsoleWrite(_Now() & ': РњРёРЅРёРјР°Р»СЊРЅРѕРµ Р·Р°С‚СѓС…Р°РЅРёРµ ' & $ymin & @CRLF)
 	;Local $ymin = _ArrayMin($y,1,1)
-	ConsoleWrite(_Now() & ': Максимальное затухание ' & $ymax & @CRLF)
+	ConsoleWrite(_Now() & ': РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·Р°С‚СѓС…Р°РЅРёРµ ' & $ymax & @CRLF)
 	;Local $ymax = _ArrayMax($y,1,1)
-	;ConsoleWrite(_Now() & ': Пределы определены!' & @CRLF)
+	;ConsoleWrite(_Now() & ': РџСЂРµРґРµР»С‹ РѕРїСЂРµРґРµР»РµРЅС‹!' & @CRLF)
 	;ConsoleWrite($xmin & ' ' & $xmax & ' ' & $ymin & ' ' & $ymax)
-	;$ymax = 23.2 ;установка собственных максимумов
+	;$ymax = 23.2 ;СѓСЃС‚Р°РЅРѕРІРєР° СЃРѕР±СЃС‚РІРµРЅРЅС‹С… РјР°РєСЃРёРјСѓРјРѕРІ
 	GUICtrlSetData($waitLabel, '')
-	; ===== Цвет в списке =====
-	Local $hImage ;цвет в списке
-	$hImage = _GUIImageList_Create() ; цвет в списке
+	; ===== Р¦РІРµС‚ РІ СЃРїРёСЃРєРµ =====
+	Local $hImage ;С†РІРµС‚ РІ СЃРїРёСЃРєРµ
+	$hImage = _GUIImageList_Create() ; С†РІРµС‚ РІ СЃРїРёСЃРєРµ
 	For $j = 0 To $aData[0][1] - 1
 		_GUIImageList_Add($hImage, _GUICtrlListView_CreateSolidBitMap($ListView, _color($j), 16, 16))
 	Next
 	Local $hPrevImageList = _GUICtrlListView_SetImageList($ListView, $hImage, 1)
-	; ===== Запись в лог файл =====
+	; ===== Р—Р°РїРёСЃСЊ РІ Р»РѕРі С„Р°Р№Р» =====
 	If $enableLogFile Then
 		Local $hFileOpen = FileOpen('optic_log.csv', $FO_APPEND)
 	EndIf
-	; ===== Анализ =====
-	ConsoleWrite(_Now() & ': Анализируем данные.' & @CRLF)
+	; ===== РђРЅР°Р»РёР· =====
+	ConsoleWrite(_Now() & ': РђРЅР°Р»РёР·РёСЂСѓРµРј РґР°РЅРЅС‹Рµ.' & @CRLF)
 	For $j = 0 To $aData[0][1] - 1
 		$min = _ArrayMinMy($aData, 1, 1, $aData[0][$j * 2], $j * 2 + 1)
 		$max = _ArrayMax($aData, 1, 1, $aData[0][$j * 2], $j * 2 + 1)
@@ -388,7 +388,7 @@ Func _DrawLine($aData)
 	If $enableLogFile Then
 		FileClose($hFileOpen)
 	EndIf
-	ConsoleWrite(_Now() & ': Создаём область построения.' & @CRLF)
+	ConsoleWrite(_Now() & ': РЎРѕР·РґР°С‘Рј РѕР±Р»Р°СЃС‚СЊ РїРѕСЃС‚СЂРѕРµРЅРёСЏ.' & @CRLF)
 	;----- Create Graph area -----
 	Global $Graph = _GraphGDIPlus_Create($GUI, 100, 150, 800, 450, 0xFFC0C0C0, 0xFFFFFFFF)
 	_GraphGDIPlus_Set_RangeX_IESV($Graph, $xmin, $xmax, 10, 1, 0)
@@ -423,7 +423,7 @@ Func _DrawLine($aData)
 	_GraphGDIPlus_Set_PenSize($Graph, 1)
 	;----- Draw lines -----
 	;MsgBox(0,'',$x[0])
-	ConsoleWrite(_Now() & ': Входим в главный цикл.' & @CRLF)
+	ConsoleWrite(_Now() & ': Р’С…РѕРґРёРј РІ РіР»Р°РІРЅС‹Р№ С†РёРєР».' & @CRLF)
 	For $j = 0 To $aData[0][1] - 1
 		_GraphGDIPlus_Set_PenColor($Graph, _color($j))
 		Local $step = 1
@@ -432,9 +432,9 @@ Func _DrawLine($aData)
 		EndIf
 		;MsgBox(0,$x[0],$step)
 		$First = True
-		ConsoleWrite(_Now() & ': Строим график ' & $j + 1 & ' из ' & $aData[0][1] & '.' & @CRLF)
+		ConsoleWrite(_Now() & ': РЎС‚СЂРѕРёРј РіСЂР°С„РёРє ' & $j + 1 & ' РёР· ' & $aData[0][1] & '.' & @CRLF)
 		For $i = 1 To $aData[0][$j * 2] Step $step
-			; Исключение некорректных значений
+			; РСЃРєР»СЋС‡РµРЅРёРµ РЅРµРєРѕСЂСЂРµРєС‚РЅС‹С… Р·РЅР°С‡РµРЅРёР№
 			If $aData[$i][$j * 2 + 1] = '' Then
 				$First = True
 				ContinueLoop
@@ -445,9 +445,9 @@ Func _DrawLine($aData)
 			_GraphGDIPlus_Plot_Line($Graph, $aData[$i][$j * 2], $aData[$i][$j * 2 + 1])
 		Next
 	Next
-	ConsoleWrite(_Now() & ': Обновляем область построения.' & @CRLF)
+	ConsoleWrite(_Now() & ': РћР±РЅРѕРІР»СЏРµРј РѕР±Р»Р°СЃС‚СЊ РїРѕСЃС‚СЂРѕРµРЅРёСЏ.' & @CRLF)
 	_GraphGDIPlus_Refresh($Graph)
-	ConsoleWrite(_Now() & ': Графики построены.' & @CRLF)
+	ConsoleWrite(_Now() & ': Р“СЂР°С„РёРєРё РїРѕСЃС‚СЂРѕРµРЅС‹.' & @CRLF)
 EndFunc   ;==>_DrawLine
 
 Func _EPOCH($date)
@@ -468,12 +468,12 @@ Func _Exit()
 EndFunc   ;==>_Exit
 
 Func _ListSort()
-	If GUICtrlRead($label_sort) = "по алфавиту" Then
-		GUICtrlSetData($label_sort, "по порядку")
-	ElseIf GUICtrlRead($label_sort) = "по порядку" Then
-		GUICtrlSetData($label_sort, "по алфавиту")
+	If GUICtrlRead($label_sort) = "РїРѕ Р°Р»С„Р°РІРёС‚Сѓ" Then
+		GUICtrlSetData($label_sort, "РїРѕ РїРѕСЂСЏРґРєСѓ")
+	ElseIf GUICtrlRead($label_sort) = "РїРѕ РїРѕСЂСЏРґРєСѓ" Then
+		GUICtrlSetData($label_sort, "РїРѕ Р°Р»С„Р°РІРёС‚Сѓ")
 	Else
-		MsgBox(0, "Оптика", "Ошибка в списке")
+		MsgBox(0, "РћРїС‚РёРєР°", "РћС€РёР±РєР° РІ СЃРїРёСЃРєРµ")
 	EndIf
 	GUICtrlSetData($topo_list, _DataLinkList())
 EndFunc   ;==>_ListSort
@@ -507,7 +507,7 @@ Func _DataLinkList() ; List of Links
 	For $i = 1 To $aTopology[0][0]
 		$l &= '|' & $i & ". " & $aTopology[$i][0] & ' - ' & $aTopology[$i][1]
 	Next
-	If GUICtrlRead($label_sort) = "по алфавиту" Then
+	If GUICtrlRead($label_sort) = "РїРѕ Р°Р»С„Р°РІРёС‚Сѓ" Then
 		For $i = 1 To $aTopology[0][0]
 			_ArrayAdd($aTopology, $aTopology[$i][1] & '|' & $aTopology[$i][0], '|')
 			$aTopology[0][0] += 1
@@ -643,7 +643,7 @@ Func _MyArrayAverage1($array, $n)
 	Return Round($k / ($n - $c), 2)
 EndFunc   ;==>_MyArrayAverage1
 
-Func _color($i) ;Выбрать цвет от 0 до 29 и далее
+Func _color($i) ;Р’С‹Р±СЂР°С‚СЊ С†РІРµС‚ РѕС‚ 0 РґРѕ 29 Рё РґР°Р»РµРµ
 	Dim $color[30]
 	$color[0] = 0xFF365A86
 	$color[1] = 0xFF883734
