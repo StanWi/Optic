@@ -3,7 +3,7 @@
 #include <SQLite.au3>
 
 $path = @ScriptDir & '\Export\XDM\'
-Global $sDbFile = IniRead("optic.ini", "Main", "Database", @ScriptDir & "\optic.db") ; Файл базы данных.
+Global $sDbFile = IniRead("optic.ini", "Main", "Database", @ScriptDir & "\optic.db") ; Р¤Р°Р№Р» Р±Р°Р·С‹ РґР°РЅРЅС‹С….
 
 $aFileList = _FileListToArray($path)
 If @error = 1 Then
@@ -26,20 +26,20 @@ For $i = 1 To $aFileList[0]
 Next
 
 Func export_opt($file_name, $iFile, $nFile)
-	TraySetToolTip('Файл ' & $iFile & ' из ' & $nFile & @CRLF & $percent & ' %')
+	TraySetToolTip('Р¤Р°Р№Р» ' & $iFile & ' РёР· ' & $nFile & @CRLF & $percent & ' %')
 
 	$file = FileOpen($file_name, 512) ; Use ANSI reading and writing mode.
 	$hex = Hex(Binary(FileRead($file)))
 	FileClose($file)
 
-	Local $num = StringInStr($hex, '0A', 2, 1) + 2 ; Ищем первое вхождение '0A', быстрый поиск без учёта регистра
+	Local $num = StringInStr($hex, '0A', 2, 1) + 2 ; РС‰РµРј РїРµСЂРІРѕРµ РІС…РѕР¶РґРµРЅРёРµ '0A', Р±С‹СЃС‚СЂС‹Р№ РїРѕРёСЃРє Р±РµР· СѓС‡С‘С‚Р° СЂРµРіРёСЃС‚СЂР°
 	Local $object = ''
-	Local $timer ; Таймер подсказки в трее
+	Local $timer ; РўР°Р№РјРµСЂ РїРѕРґСЃРєР°Р·РєРё РІ С‚СЂРµРµ
 	Local $value[3]
 	Local $k = 0
 	Local $result[Round(FileGetSize($file_name) / 30)][7]
 
-	$timer = TimerInit() ; Инициализация таймена для подсказки в трее
+	$timer = TimerInit() ; РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°Р№РјРµРЅР° РґР»СЏ РїРѕРґСЃРєР°Р·РєРё РІ С‚СЂРµРµ
 	While $num < StringLen($hex)
 		If _rByteToDec($hex, $num, 2) <> 2 Then
 			$num = $num + 92 ; Skip data with "Disconnected NE 0x0A...00000000"
@@ -77,7 +77,7 @@ Func export_opt($file_name, $iFile, $nFile)
 		Next
 		$num = $num + 14 * 4 + $count / 3 * 13 * 4
 
-;~ 		TraySetToolTip('Файл ' & $iFile & ' из ' & $nFile & @CRLF & $percent + Round(($num / StringLen($hex) * 100) / $nFile, 2) & ' %, время внесения записи ' & Round(TimerDiff($timer), 0) & ' мс')
+;~ 		TraySetToolTip('Р¤Р°Р№Р» ' & $iFile & ' РёР· ' & $nFile & @CRLF & $percent + Round(($num / StringLen($hex) * 100) / $nFile, 2) & ' %, РІСЂРµРјСЏ РІРЅРµСЃРµРЅРёСЏ Р·Р°РїРёСЃРё ' & Round(TimerDiff($timer), 0) & ' РјСЃ')
 	WEnd
 	$result[0][0] = $k
 	ConsoleWrite('record in ' & Round(TimerDiff($timer) / $k * 1000) & ' mcs, total ' & $k & ' records. ')
@@ -86,7 +86,7 @@ Func export_opt($file_name, $iFile, $nFile)
 	$percent = Round($iFile / $nFile * 100, 2)
 EndFunc   ;==>export_opt
 
-Func _rByteToDec($string, $k, $n) ; Преобразование $n байтов в обратном порядке в десятичное число
+Func _rByteToDec($string, $k, $n) ; РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ $n Р±Р°Р№С‚РѕРІ РІ РѕР±СЂР°С‚РЅРѕРј РїРѕСЂСЏРґРєРµ РІ РґРµСЃСЏС‚РёС‡РЅРѕРµ С‡РёСЃР»Рѕ
 	Local $subString = ''
 	For $i = $n - 1 To 0 Step -1
 		$subString = $subString & StringMid($string, $k + $i * 2, 2)

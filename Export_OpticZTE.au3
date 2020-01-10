@@ -4,7 +4,7 @@
 #include <SQLite.au3>
 
 Global $GMT = 8
-Global $sDbFile = IniRead("optic.ini", "Main", "Database", @ScriptDir & "\optic.db") ; Файл базы данных.
+Global $sDbFile = IniRead("optic.ini", "Main", "Database", @ScriptDir & "\optic.db") ; Р¤Р°Р№Р» Р±Р°Р·С‹ РґР°РЅРЅС‹С….
 $path = @ScriptDir & '\Export\ZTE\'
 $dir = _FileListToArray($path, '*', $FLTA_FOLDERS)
 If @error = 1 Then
@@ -66,8 +66,8 @@ For $i = 1 To $dir[0]
 		EndIf
 	Next
 	print('')
-	print('Время генерации списка ' & TimerDiff($timer))
-	print('Длина списка $value = ' & $value[0][0])
+	print('Р’СЂРµРјСЏ РіРµРЅРµСЂР°С†РёРё СЃРїРёСЃРєР° ' & TimerDiff($timer))
+	print('Р”Р»РёРЅР° СЃРїРёСЃРєР° $value = ' & $value[0][0])
 ;~ 	_ArrayDisplay($value)
 	For $j = 0 To Floor($value[0][0] / 500)
 		ConsoleWrite('<')
@@ -94,12 +94,12 @@ Func _split($string, $mode = 'ne')
 	Return $result
 EndFunc   ;==>_split
 
-Func _EPOCH($time) ;Возвращает количество секунд после EPOCH от даты изменения файла YYYYMMDDHHMMSS
+Func _EPOCH($time) ;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµРєСѓРЅРґ РїРѕСЃР»Рµ EPOCH РѕС‚ РґР°С‚С‹ РёР·РјРµРЅРµРЅРёСЏ С„Р°Р№Р»Р° YYYYMMDDHHMMSS
 	Local $d = StringRegExpReplace($time, '(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}).000', '$1/$2/$3 $4:$5:$6')
 	Return _DateDiff('s', '1970/01/01 00:00:00', $d) - 3600 * $GMT
 EndFunc   ;==>_EPOCH
 
-Func _request($value, $step = 0) ;500 строк
+Func _request($value, $step = 0) ;500 СЃС‚СЂРѕРє
 	If $value[0][0] - 500 * $step > 1 Then
 		Local $request = 'INSERT INTO opticZTE' & @CRLF
 		Local $i
